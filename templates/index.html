@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Your To-Do List</h1>
+  <form method="POST">
+      {{ form.hidden_tag() }}
+      {{ form.task.label }} {{ form.task(size=30) }}
+      {{ form.submit() }}
+  </form>
+  <h2>All Tasks 📝</h2>
+<ol class="task-list">
+  {% for task in tasks if not task.is_today %}
+    <li>
+      {{ task.content }}
+      <!-- Mark as Today's Task -->
+      <a href="{{ url_for('mark_today', task_id=task.id) }}">✅ Mark Today</a>
+      <a href="{{ url_for('delete', task_id=task.id) }}">[Delete]</a>
+    </li>
+  {% endfor %}
+</ol>
+
+<hr>
+
+<h2>Today's Work 🗓️</h2>
+<ol class="task-list">
+  {% for task in tasks if task.is_today %}
+    <li>
+      {{ task.content }}
+      <!-- Optionally: Remove from Today -->
+      <a href="{{ url_for('unmark_today', task_id=task.id) }}">❌ Unmark</a>
+    </li>
+  {% else %}
+    <p>No tasks marked for today.</p>
+  {% endfor %}
+</ol>
+
+{% endblock %}
+
+<h2>Today's Work 🗓️</h2>
+<ol class="task-list">
+  {% for task in tasks if task.is_today %}
+    <li>
+      {{ task.content }}
+      <a href="{{ url_for('unmark_today', task_id=task.id) }}">❌ Remove</a>
+    </li>
+  {% else %}
+    <p>No tasks marked for today.</p>
+  {% endfor %}
+</ol>
+
+<hr>
+
+<h2>All Tasks 📝</h2>
+<ol class="task-list">
+  {% for task in tasks if not task.is_today %}
+    <li>
+      {{ task.content }}
+      <a href="{{ url_for('mark_today', task_id=task.id) }}">✅ Mark Today</a>
+    </li>
+  {% endfor %}
+</ol>
