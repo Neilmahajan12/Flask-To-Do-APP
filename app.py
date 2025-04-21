@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required, UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import LoginForm, RegisterForm, TaskForm
-
+from datetime import datetime
 # Setup
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -34,6 +34,7 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    due_date = db.Column(db.DateTime, nullable=True)
     is_today = db.Column(db.Boolean, default=False)
 
 @login_manager.user_loader
@@ -45,14 +46,16 @@ def load_user(user_id):
 @login_required
 def index():
     form = TaskForm()
+    now = datetime.now()
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
     tasks = Task.query.filter_by(owner=current_user).all()
     if form.validate_on_submit():
-        new_task = Task(content=form.task.data, owner=current_user)
+        new_task = Task(content=form.content.data, owner=current_user)
         db.session.add(new_task)
         db.session.commit()
         flash('Task added!', 'success')
         return redirect(url_for('index'))
-    return render_template('index.html', tasks=tasks, form=form)
+    return render_template('index.html', tasks=tasks, form=form,now=now)
 
 @app.route('/delete/<int:task_id>')
 @login_required
@@ -122,6 +125,7 @@ def logout():
     logout_user()
     flash('Logged out successfully.', 'info')
     return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     with app.app_context():

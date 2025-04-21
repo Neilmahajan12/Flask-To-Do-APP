@@ -41,11 +41,11 @@ flask-todo-app/
 ├── app.py
 ├── models.py
 ├── templates/
-│   └── index.html
-│   └── login.html
-│   └── register.html
+   └── index.html
+   └── login.html
+   └── register.html
 ├── static/
-│   └── style.css
+   └── style.css
 ├── migrations/
 ├── requirements.txt
 └── README.md
